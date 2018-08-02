@@ -35,7 +35,7 @@ export class CanvasGame extends Component{
 		if(prevState.keys !== this.props.keys) this.setState({keys: this.props.keys})
 	}
 
-	canvas = el => {
+	canvasAnimation = el => {
 		const canvasAll = document.querySelectorAll('.canvasSnake');
 
 		Array.from(canvasAll).forEach(canvas => {
