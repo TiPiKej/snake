@@ -56,13 +56,46 @@ export class CanvasGame extends Component{
 
 		const canvasAnimation = () => {
 			Array.from(canvasAll).forEach(canvas => {
+				const width = canvas.offsetWidth,
+							height = canvas.offsetHeight;
 
 				const ctx = canvas.getContext('2d');
 
-				// ctx.
+				ctx.clearRect(0, 0, Number(width), Number(height));
+				ctx.beginPath();
+				ctx.lineWidth = 2;
+				ctx.moveTo(10, 15);
+				ctx.lineTo(10, 10)
 
-				setTimeout(this.canvasAnimation, 1000/this.state.frameRate);
+				let leftLength = snakeLength, 
+						i = 1;
+
+				let cur;
+
+				while(leftLength > 0){
+					cur = changeDirections[changeDirections.length - i];
+
+					if(cur !== undefined){
+						switch(cur.currentDirection){
+							case "down":
+								break;
+							case "up":
+								break;
+							case "left":
+								break;
+							case "right":
+								break;
+						}
+						console.log(cur)
+					}
+
+					leftLength--;
+					i++;
+				}
+
+				ctx.stroke();
 			});
+			// setTimeout(canvasAnimation, 1000/this.state.frameRate);
 		}
 
 
