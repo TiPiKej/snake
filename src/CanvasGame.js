@@ -36,18 +36,20 @@ export class CanvasGame extends Component{
 
 		const canvasAll = document.querySelectorAll('.canvasSnake');
 		let snakeLength = 10;
+		let snakeSpeed = .05;
 		let currentLocation = {
-				left: 2,
-				top: 11
+				left: 10,
+				top: 10
 			}
 		let changeDirections = [
 				{
 					previousDirection: null, 
 					currentDirection: 'down', 
-					left: null, 
-					top: null
+					left: 10, 
+					top: 2
 				}
 			];
+		let direction = 'down';
 
 
 		/*****************/
@@ -64,8 +66,31 @@ export class CanvasGame extends Component{
 				ctx.clearRect(0, 0, Number(width), Number(height));
 				ctx.beginPath();
 				ctx.lineWidth = 2;
-				ctx.moveTo(10, 15);
-				ctx.lineTo(10, 10)
+
+				switch(this.state.keys.keyCode){
+					case 37:// Arrow Left
+						direction = direction !== 'right'? 'left': direction;
+						break;
+					case 38:// Arrow Up
+						direction = direction !== 'down'? 'up': direction;
+						break;
+					case 39:// Arrow Right
+						direction = direction !== 'left'? 'right': direction;
+						break;
+					case 40:// Arrow Down
+						direction = direction !== 'up'? 'down': direction;
+						break;
+				}
+
+				if(direction !== changeDirections[changeDirections.length - 1].currentDirection){
+					changeDirections.push({
+						previousDirection: changeDirections[changeDirections.length - 1].currentDirection, 
+						currentDirection: direction, 
+						left: currentLocation.left, 
+						top: currentLocation.top
+					});
+					console.log(changeDirections)
+				}
 
 				let leftLength = snakeLength, 
 						i = 1;
@@ -78,15 +103,36 @@ export class CanvasGame extends Component{
 					if(cur !== undefined){
 						switch(cur.currentDirection){
 							case "down":
+								currentLocation.top += snakeSpeed;
+								ctx.moveTo(cur.left, currentLocation.top);
+								ctx.lineTo(cur.left, cur.top)
+								
+								leftLength -= cur.top - currentLocation.top;
 								break;
 							case "up":
+								currentLocation.top -= snakeSpeed;
+								ctx.moveTo(cur.left, currentLocation.top);
+								ctx.lineTo(cur.left, cur.top)
+								
+								leftLength -= currentLocation.top - cur.top;
 								break;
 							case "left":
+								currentLocation.left -= snakeSpeed;
+								ctx.moveTo(currentLocation.left, cur.top);
+								ctx.lineTo(cur.left, cur.top)
+								
+								leftLength -= cur.left - currentLocation.left;
 								break;
 							case "right":
+								currentLocation.left += snakeSpeed;
+								ctx.moveTo(currentLocation.left, cur.top);
+								ctx.lineTo(cur.left, cur.top)
+
+								leftLength  = leftLength - currentLocation.left - cur.left;
+								console.log(currentLocation.left - cur.left)
 								break;
 						}
-						console.log(cur)
+						// console.log(currentLocation)
 					}
 
 					leftLength--;
@@ -95,7 +141,7 @@ export class CanvasGame extends Component{
 
 				ctx.stroke();
 			});
-			// setTimeout(canvasAnimation, 1000/this.state.frameRate);
+			setTimeout(canvasAnimation, 1000/this.state.frameRate);
 		}
 
 

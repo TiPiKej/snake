@@ -40,7 +40,7 @@ export class Snake extends Component{
 				key: '',
 				keyCode: null
 			},
-			frameRate: 10
+			frameRate: 60
 		}
 
 		document.addEventListener("keydown", el => this.props.keyDown(el))
