@@ -90,54 +90,73 @@ export class CanvasGame extends Component{
 						top: currentLocation.top
 					});
 					console.log(changeDirections)
+					console.log(currentLocation)
 				}
 
 				let leftLength = snakeLength, 
-						i = 1;
+						i = 1,
+						last;
 
-				let cur;
 
+				// console.log(last)
+				ctx.moveTo(currentLocation.left, currentLocation.top);
 				while(leftLength > 0){
-					cur = changeDirections[changeDirections.length - i];
+					last = changeDirections[changeDirections.length - i];
+					if(last.currentDirection === 'down'){
 
-					if(cur !== undefined){
-						switch(cur.currentDirection){
-							case "down":
-								currentLocation.top += snakeSpeed;
-								ctx.moveTo(cur.left, currentLocation.top);
-								ctx.lineTo(cur.left, cur.top)
-								
-								leftLength -= cur.top - currentLocation.top;
-								break;
-							case "up":
-								currentLocation.top -= snakeSpeed;
-								ctx.moveTo(cur.left, currentLocation.top);
-								ctx.lineTo(cur.left, cur.top)
-								
-								leftLength -= currentLocation.top - cur.top;
-								break;
-							case "left":
-								currentLocation.left -= snakeSpeed;
-								ctx.moveTo(currentLocation.left, cur.top);
-								ctx.lineTo(cur.left, cur.top)
-								
-								leftLength -= cur.left - currentLocation.left;
-								break;
-							case "right":
-								currentLocation.left += snakeSpeed;
-								ctx.moveTo(currentLocation.left, cur.top);
-								ctx.lineTo(cur.left, cur.top)
+						// if(leftLength < currentLocation.top - last.top)
+						ctx.lineTo(
+							currentLocation.left, 
+							currentLocation.top - last.top
+						);
 
-								leftLength  = leftLength - currentLocation.left - cur.left;
-								console.log(currentLocation.left - cur.left)
-								break;
-						}
-						// console.log(currentLocation)
+						if(leftLength < currentLocation.top - last.top) console.log(currentLocation.top - last.top, last.top)
+						// console.log(currentLocation.top - last.top)
+						leftLength = leftLength - currentLocation.top - last.top;
+						currentLocation.top += snakeSpeed;
+
+					}else if(last.currentDirection === 'right'){
+
+						ctx.lineTo( 
+							leftLength > currentLocation.left - last.left?(
+								currentLocation.left - leftLength
+							):(
+								currentLocation.left - last.left
+							),
+							currentLocation.top
+						);
+						leftLength = leftLength - currentLocation.left - last.left;
+						currentLocation.left += snakeSpeed;
+
+					}else if(last.currentDirection === 'up'){
+
+						ctx.lineTo(
+							currentLocation.left, 
+							leftLength < currentLocation.top - last.top?(
+								currentLocation.top - leftLength
+							):(
+								currentLocation.top - last.top
+							)
+						);
+						leftLength = leftLength + currentLocation.top - last.top;
+						currentLocation.top -= snakeSpeed;
+					}else if(last.currentDirection === 'left'){
+
+						ctx.lineTo(
+							leftLength > currentLocation.left - last.left?(
+								currentLocation.left + leftLength
+							):(
+								currentLocation.left + last.left
+							),
+							currentLocation.top
+						);
+						leftLength = leftLength + currentLocation.left - last.left;
+						currentLocation.left -= snakeSpeed;
+
 					}
-
-					leftLength--;
 					i++;
 				}
+				
 
 				ctx.stroke();
 			});
