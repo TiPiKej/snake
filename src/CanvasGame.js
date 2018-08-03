@@ -80,6 +80,9 @@ export class CanvasGame extends Component{
 					case 40:// Arrow Down
 						direction = direction !== 'up'? 'down': direction;
 						break;
+					default:// Arrow Down
+						direction = 'space';
+						break;
 				}
 
 				if(direction !== changeDirections[changeDirections.length - 1].currentDirection){
@@ -102,22 +105,21 @@ export class CanvasGame extends Component{
 				ctx.moveTo(currentLocation.left, currentLocation.top);
 				while(leftLength > 0){
 					last = changeDirections[changeDirections.length - i];
-					console.log(last)
 					// if(last === undefined) break;
 
 					if(last.currentDirection === 'down'){
 
 						// if(leftLength < currentLocation.top - last.top)
 						ctx.lineTo(
-							currentLocation.left, 
+							last.left, 
 							leftLength < currentLocation.top - last.top?(
 								currentLocation.top - leftLength
 							):(
 								last.top
 							)
 						);
-
-						leftLength = leftLength - currentLocation.top - last.top;
+						
+						leftLength = leftLength - Math.abs(currentLocation.top - last.top);
 						currentLocation.top += snakeSpeed;
 
 					}else if(last.currentDirection === 'right'){
@@ -128,17 +130,17 @@ export class CanvasGame extends Component{
 							):(
 								last.left
 							),
-							currentLocation.top
+							last.top
 						);
 
-						leftLength = leftLength - currentLocation.left - last.left;
+						leftLength = leftLength - Math.abs(currentLocation.left - last.left);
 
 						currentLocation.left += snakeSpeed;
 
 					}else if(last.currentDirection === 'up'){
 
 						ctx.lineTo(
-							currentLocation.left, 
+							last.left, 
 							leftLength < last.top - currentLocation.top?(
 								currentLocation.top + leftLength
 							):(
@@ -146,7 +148,8 @@ export class CanvasGame extends Component{
 							)
 						);
 
-						leftLength = leftLength - last.top - currentLocation.top;
+						// leftLength = leftLength - last.top - currentLocation.top;
+						leftLength = leftLength - Math.abs(currentLocation.top - last.top);
 
 						currentLocation.top -= snakeSpeed;
 					}else if(last.currentDirection === 'left'){
@@ -157,16 +160,15 @@ export class CanvasGame extends Component{
 							):(
 								last.left
 							),
-							currentLocation.top
+							last.top
 						);
 
-						leftLength = leftLength - last.left - currentLocation.left;
+						// leftLength = leftLength - last.left - currentLocation.left;
+						leftLength = leftLength - Math.abs(currentLocation.left - last.left);
 
 						currentLocation.left -= snakeSpeed;
 
 					}
-					console.log(last)
-					console.log(leftLength)
 					i++;
 				}
 				
