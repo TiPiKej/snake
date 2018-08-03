@@ -36,17 +36,17 @@ export class CanvasGame extends Component{
 
 		const canvasAll = document.querySelectorAll('.canvasSnake');
 		let snakeLength = 10;
-		let snakeSpeed = .05;
+		let snakeSpeed = .5;
 		let currentLocation = {
 				left: 10,
-				top: 10
+				top: 12
 			}
 		let changeDirections = [
 				{
 					previousDirection: null, 
 					currentDirection: 'down', 
 					left: 10, 
-					top: 2
+					top: 0
 				}
 			];
 		let direction = 'down';
@@ -89,8 +89,8 @@ export class CanvasGame extends Component{
 						left: currentLocation.left, 
 						top: currentLocation.top
 					});
-					console.log(changeDirections)
-					console.log(currentLocation)
+					// console.log(changeDirections)
+					// console.log(currentLocation)
 				}
 
 				let leftLength = snakeLength, 
@@ -102,58 +102,71 @@ export class CanvasGame extends Component{
 				ctx.moveTo(currentLocation.left, currentLocation.top);
 				while(leftLength > 0){
 					last = changeDirections[changeDirections.length - i];
+					console.log(last)
+					// if(last === undefined) break;
+
 					if(last.currentDirection === 'down'){
 
 						// if(leftLength < currentLocation.top - last.top)
 						ctx.lineTo(
 							currentLocation.left, 
-							currentLocation.top - last.top
+							leftLength < currentLocation.top - last.top?(
+								currentLocation.top - leftLength
+							):(
+								last.top
+							)
 						);
 
-						if(leftLength < currentLocation.top - last.top) console.log(currentLocation.top - last.top, last.top)
-						// console.log(currentLocation.top - last.top)
 						leftLength = leftLength - currentLocation.top - last.top;
 						currentLocation.top += snakeSpeed;
 
 					}else if(last.currentDirection === 'right'){
 
 						ctx.lineTo( 
-							leftLength > currentLocation.left - last.left?(
+							leftLength < currentLocation.left - last.left?(
 								currentLocation.left - leftLength
 							):(
-								currentLocation.left - last.left
+								last.left
 							),
 							currentLocation.top
 						);
+
 						leftLength = leftLength - currentLocation.left - last.left;
+
 						currentLocation.left += snakeSpeed;
 
 					}else if(last.currentDirection === 'up'){
 
 						ctx.lineTo(
 							currentLocation.left, 
-							leftLength < currentLocation.top - last.top?(
-								currentLocation.top - leftLength
+							leftLength < last.top - currentLocation.top?(
+								currentLocation.top + leftLength
 							):(
-								currentLocation.top - last.top
+								last.top
 							)
 						);
-						leftLength = leftLength + currentLocation.top - last.top;
+
+						leftLength = leftLength - last.top - currentLocation.top;
+
 						currentLocation.top -= snakeSpeed;
 					}else if(last.currentDirection === 'left'){
 
 						ctx.lineTo(
-							leftLength > currentLocation.left - last.left?(
+							leftLength < last.left - currentLocation.left?(
 								currentLocation.left + leftLength
 							):(
-								currentLocation.left + last.left
+								last.left
 							),
 							currentLocation.top
 						);
-						leftLength = leftLength + currentLocation.left - last.left;
+
+						leftLength = leftLength - last.left - currentLocation.left;
+
 						currentLocation.left -= snakeSpeed;
 
 					}
+					console.log(last)
+					console.log(leftLength)
 					i++;
 				}
 				
