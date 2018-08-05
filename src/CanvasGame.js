@@ -35,7 +35,7 @@ export class CanvasGame extends Component{
 		 */
 
 		const canvasAll = document.querySelectorAll('.canvasSnake');
-		let snakeLength = 100;
+		let snakeLength = 10;
 		let snakeSpeed = .5;
 		let currentLocation = {
 				left: 10,
