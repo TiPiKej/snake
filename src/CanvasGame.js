@@ -41,7 +41,7 @@ export class CanvasGame extends Component{
 		const appleContent = "*",
 					appleFont = '32px serif';
 		const lengthOfOneSegment = 20;
-		let snakeLength = 1;
+		let snakeLength = 3;
 		let snakeSpeed = 1;
 		let snakeWidth = 3;
 		let currentLocation = {
@@ -168,6 +168,17 @@ export class CanvasGame extends Component{
 					if(allLocations[allLocations.length - i] === undefined) break;
 					let {left, top, direction} = allLocations[allLocations.length - i];
 
+
+				
+					/*----------  checking for eat himself  ----------*/
+					
+					if(
+						left === currentLocation.left &&
+						top === currentLocation.top &&
+						i !== 1
+					) loose = true
+				
+
 					ctx.lineTo(left, top);
 					leftLength--;
 					i++;
@@ -180,7 +191,7 @@ export class CanvasGame extends Component{
 
 				/*----------  checking for possibly loose  ----------*/
 				
-				loose = checkIfLoose(allLocations, width, height, snakeLength * lengthOfOneSegment);
+				loose = loose? true: checkIfLoose(allLocations, width, height, snakeLength * lengthOfOneSegment);
 
 				if(loose) canvas.className += ' loose';
 
