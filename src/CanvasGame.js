@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './css/canvas.css';
 
 export class CanvasGame extends Component{
 	constructor(props){
@@ -7,7 +6,7 @@ export class CanvasGame extends Component{
 
 		this.state = {
 			lang: props.lang === undefined? "en": props.lang,
-			frameRate: props.frameRate === undefined? 60: props.frameRate,
+			frameRate: props.frameRate === undefined? 30: props.frameRate,
 			keys: {
 				key: '',
 				keyCode: 0
@@ -16,7 +15,7 @@ export class CanvasGame extends Component{
 
 		this.backTitle = {
 			pl: "Twoja przeglądarka nie obsługuje technologi: Canvas",
-			en: "Your browser is not supported"
+			en: "Canvas is not supported on your browser"
 		}
 	}
 
@@ -24,6 +23,8 @@ export class CanvasGame extends Component{
 		if(prevState.lang !== this.props.lang) this.setState({lang: this.props.lang})
 		
 		if(prevState.keys !== this.props.keys) this.setState({keys: this.props.keys})
+
+		if(prevState.again !== this.props.again && this.props.again) this.canvas()
 	}
 
 	canvas = el => {
@@ -35,25 +36,17 @@ export class CanvasGame extends Component{
 		 */
 
 		const canvasAll = document.querySelectorAll('.canvasSnake');
+		let width, height;
 		let appleLocations = [];
-		const appleObj = new Image();
-					appleObj.src = "https://openclipart.org/download/183893/simple-apple.svg";
-					appleObj.onload = () => {
-						appleLocations = [
-							{
-								left: 200,
-								top: 200,
-								grabbed: false
-							}
-						];
-					}
+		const appleContent = "*",
+					appleFont = '32px serif';
 		const lengthOfOneSegment = 20;
-		let snakeLength = 3;
+		let snakeLength = 1;
 		let snakeSpeed = 1;
 		let snakeWidth = 3;
 		let currentLocation = {
-				left: 10,
-				top: 10
+				left: 100,
+				top: 100
 			}
 		let direction = 'down';
 		let allLocations = [
@@ -72,19 +65,13 @@ export class CanvasGame extends Component{
 
 		const canvasAnimation = () => {
 			Array.from(canvasAll).forEach(canvas => {
-				const width = canvas.offsetWidth,
-							height = canvas.offsetHeight;
+				width = canvas.offsetWidth,
+				height = canvas.offsetHeight;
 
 				const ctx = canvas.getContext('2d');
 
 				ctx.clearRect(0, 0, Number(width), Number(height));
-
-				/*----------  drawing apples  ----------*/
-
-				Array.from(appleLocations).forEach(apple => {
-					// console.log(apple)
-					if(!apple.grabbed) ctx.drawImage(appleObj, apple.left, apple.top, 20, 20)
-				});
+				ctx.beginPath();
 
 
 				/*----------  detecting change direction from arrows keys  ----------*/
@@ -123,6 +110,36 @@ export class CanvasGame extends Component{
 				}
 
 
+				/*----------------  drawing apples  ----------------*/
+				/*----------  and checking for eat apple  ----------*/
+
+				Array.from(appleLocations).forEach(({left, top, grabbed}, nr) => {
+					if(!grabbed) {
+
+						if(
+							currentLocation.top > top &&
+							currentLocation.top < top + 16 &&
+							currentLocation.left > left &&
+							currentLocation.left < left + 16
+							) {
+								appleLocations[nr].grabbed = true
+								snakeLength++;
+							}
+
+						ctx.font = appleFont;
+						ctx.textBaseline = 'top';
+						ctx.fillText(
+								appleContent, 
+								left, 
+								top
+							);
+					} 
+					/*
+					 * text jest na polu 16px x 16px
+					 */
+				});
+
+
 				/*----------   adding snake current location to array  ----------*/
 				
 				allLocations.push({
@@ -134,7 +151,6 @@ export class CanvasGame extends Component{
 
 				/*----------  starting drawing and moving snake head to current location  ----------*/
 				
-				ctx.beginPath();
 				ctx.moveTo(currentLocation.left, currentLocation.top);
 				
 
@@ -166,8 +182,18 @@ export class CanvasGame extends Component{
 				
 				loose = checkIfLoose(allLocations, width, height, snakeLength * lengthOfOneSegment);
 
+				if(loose) canvas.className += ' loose';
+
 			});
+
+			/*----------  game loop  ----------*/
+			
+
 			if(!loose) setTimeout(canvasAnimation, 1000/this.state.frameRate);
+			else {
+				this.props.endGamePoints(snakeLength - 1);
+				clearInterval(this.applesInt)
+			}
 		}
 
 
@@ -186,6 +212,24 @@ export class CanvasGame extends Component{
 				)return true;
 			else return false;
 		}
+
+		this.applesInt = setInterval(() => {
+			if(!loose){
+				appleLocations.push({
+					left: width === undefined?(
+							Math.random() * 450
+						):(
+							Math.random() * width
+						),
+					top: width === undefined?(
+							Math.random() * 280
+						):(
+							Math.random() * height
+						),
+					grabbed: false
+				})
+			}
+		},3000);
 
 		canvasAnimation();
 	}

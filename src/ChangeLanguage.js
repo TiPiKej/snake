@@ -10,8 +10,7 @@ export class ChangeLanguageClass extends Component{
 			lang: props.lang,
 			text: {
 				pl: "Zmień język",
-				en: "Change language",
-				noData: "No data"
+				en: "Change language"
 			}
 		}
 	}
@@ -42,7 +41,7 @@ export class ChangeLanguageClass extends Component{
 	render(){
 		return(
 			<div>
-				{this.state.text[this.state.lang] === undefined? this.state.text['noData']: this.state.text[this.state.lang]}
+				{this.state.text[this.state.lang] === undefined? this.state.text['en']: this.state.text[this.state.lang]}
 				:
 				<select 
 					onChange={this.change} 

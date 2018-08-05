@@ -14,3 +14,8 @@ export const changeLang = (lang) => ({
 	type: "CHANGE_LANGUAGE",
 	lang
 });
+
+export const addPoints = (points) => ({
+	type: "ADD_POINTS",
+	points
+});

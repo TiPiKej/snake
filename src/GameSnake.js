@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { keyDown, keyUp } from './actions/';
+import { keyDown, keyUp, addPoints } from './actions/';
 import { CanvasGame } from './CanvasGame';
+import './css/canvasWrapper.css';
 
 class TitleSnake extends Component{
 	constructor(props){
@@ -11,8 +12,7 @@ class TitleSnake extends Component{
 			lang: props.lang === undefined? "en": props.lang,
 			title: {
 				pl: "Gra w snake'a",
-				en: "Snake game",
-				noData: "No data"
+				en: "Snake game"
 			}
 		}
 	}
@@ -24,9 +24,39 @@ class TitleSnake extends Component{
 
 	render(){
 		return(
-			<div>
-				{this.state.title[this.state.lang] === undefined? this.state.title['noData']: this.state.title[this.state.lang]}
+			<div
+				className="title">
+				{this.state.title[this.state.lang] === undefined? this.state.title['en']: this.state.title[this.state.lang]}
 			</div>
+		);
+	}
+}
+
+class StartGame extends Component{
+	constructor(props){
+		super(props);
+
+		this.state = {
+			lang: props.lang === undefined? "en": props.lang,
+			title: {
+				pl: "Graj od nowa",
+				en: "Play again"
+			}
+		}
+	}
+
+	componentDidUpdate(prevProps, prevState){
+		if(prevProps.lang !== this.props.lang) this.setState({lang: this.props.lang});
+	}
+
+
+	render(){
+		return(
+			<button 
+				className="playAgain"
+				onClick={this.props.onPlayAgain}>
+				{this.state.title[this.state.lang] === undefined? this.state.title['en']: this.state.title[this.state.lang]}
+			</button>
 		);
 	}
 }
@@ -40,7 +70,8 @@ export class Snake extends Component{
 				key: '',
 				keyCode: null
 			},
-			frameRate: 60
+			frameRate: 60,
+			again: false
 		}
 
 		document.addEventListener("keydown", el => this.props.keyDown(el))
@@ -50,15 +81,29 @@ export class Snake extends Component{
 	componentDidUpdate(prevProps, prevState){
 		if(prevState.keys !== this.props.keys) this.setState({keys: this.props.keys})
 	}
+	
+	playAgain = ({currentTarget}) => {
+		const canvasList = Array.from(currentTarget.parentNode.children).filter(el => el.tagName.toLowerCase() === 'canvas')
+		canvasList.forEach(el => {
+			el.className = el.className.split(' loose')[0];
+		});
+		this.setState({again: true})
+		setTimeout(() => this.setState({again: false}),500)
+	}
 
 	render(){
 		return(
-			<div>
+			<div className="gameCanvasWrapper">
 				<TitleSnake lang={this.props.lang} />
 				<CanvasGame 
 					lang={this.props.lang}
 					frameRate={this.state.frameRate}
-					keys={this.state.keys} />
+					keys={this.state.keys}
+					endGamePoints={this.props.addPoints}
+					again={this.state.again} />
+				<StartGame 
+					lang={this.props.lang}
+					onPlayAgain={this.playAgain} />
 				Naciśnięte przyciski: 
 				{this.state.keys.key},
 				{this.state.keys.keyCode}
@@ -74,6 +119,6 @@ const mapStateToProps = (state) => {
   	lang: state.lang
   }
 };
-const mapDispatchToProps = { keyDown, keyUp };
+const mapDispatchToProps = { keyDown, keyUp, addPoints };
 
 export const GameSnake = connect(mapStateToProps, mapDispatchToProps)(Snake);
