@@ -35,11 +35,11 @@ export class CanvasGame extends Component{
 		 */
 
 		const canvasAll = document.querySelectorAll('.canvasSnake');
-		let snakeLength = 10;
+		let snakeLength = 100;
 		let snakeSpeed = .5;
 		let currentLocation = {
 				left: 10,
-				top: 12
+				top: 10
 			}
 		let changeDirections = [
 				{
@@ -50,6 +50,13 @@ export class CanvasGame extends Component{
 				}
 			];
 		let direction = 'down';
+		let allLocations = [
+			{
+				left: currentLocation.left, 
+				top: currentLocation.top,
+				direction: direction
+			}
+		];
 
 
 		/*****************/
@@ -80,98 +87,42 @@ export class CanvasGame extends Component{
 					case 40:// Arrow Down
 						direction = direction !== 'up'? 'down': direction;
 						break;
-					default:// Arrow Down
-						direction = 'space';
+				}
+				switch(direction){
+					case "up":
+						currentLocation.top -= snakeSpeed;
+						break;
+					case "down":
+						currentLocation.top += snakeSpeed;
+						break;
+					case "left":
+						currentLocation.left -= snakeSpeed;
+						break;
+					case "right":
+						currentLocation.left += snakeSpeed;
 						break;
 				}
 
-				if(direction !== changeDirections[changeDirections.length - 1].currentDirection){
-					changeDirections.push({
-						previousDirection: changeDirections[changeDirections.length - 1].currentDirection, 
-						currentDirection: direction, 
-						left: currentLocation.left, 
-						top: currentLocation.top
-					});
-					// console.log(changeDirections)
-					// console.log(currentLocation)
-				}
+				allLocations.push({
+					left: currentLocation.left,
+					top: currentLocation.top,
+					direction
+				});
 
-				let leftLength = snakeLength, 
-						i = 1,
-						last;
-
-
-				// console.log(last)
 				ctx.moveTo(currentLocation.left, currentLocation.top);
+				
+				let leftLength = snakeLength,
+						i = 1;
+
 				while(leftLength > 0){
-					last = changeDirections[changeDirections.length - i];
-					// if(last === undefined) break;
+					if(allLocations[allLocations.length - i] === undefined) break;
+					const {left, top, direction} = allLocations[allLocations.length - i];
 
-					if(last.currentDirection === 'down'){
+					ctx.lineTo(left, top);
 
-						// if(leftLength < currentLocation.top - last.top)
-						ctx.lineTo(
-							last.left, 
-							leftLength < currentLocation.top - last.top?(
-								currentLocation.top - leftLength
-							):(
-								last.top
-							)
-						);
-						
-						leftLength = leftLength - Math.abs(currentLocation.top - last.top);
-						currentLocation.top += snakeSpeed;
-
-					}else if(last.currentDirection === 'right'){
-
-						ctx.lineTo( 
-							leftLength < currentLocation.left - last.left?(
-								currentLocation.left - leftLength
-							):(
-								last.left
-							),
-							last.top
-						);
-
-						leftLength = leftLength - Math.abs(currentLocation.left - last.left);
-
-						currentLocation.left += snakeSpeed;
-
-					}else if(last.currentDirection === 'up'){
-
-						ctx.lineTo(
-							last.left, 
-							leftLength < last.top - currentLocation.top?(
-								currentLocation.top + leftLength
-							):(
-								last.top
-							)
-						);
-
-						// leftLength = leftLength - last.top - currentLocation.top;
-						leftLength = leftLength - Math.abs(currentLocation.top - last.top);
-
-						currentLocation.top -= snakeSpeed;
-					}else if(last.currentDirection === 'left'){
-
-						ctx.lineTo(
-							leftLength < last.left - currentLocation.left?(
-								currentLocation.left + leftLength
-							):(
-								last.left
-							),
-							last.top
-						);
-
-						// leftLength = leftLength - last.left - currentLocation.left;
-						leftLength = leftLength - Math.abs(currentLocation.left - last.left);
-
-						currentLocation.left -= snakeSpeed;
-
-					}
+					leftLength--;
 					i++;
 				}
-				
 
 				ctx.stroke();
 			});
