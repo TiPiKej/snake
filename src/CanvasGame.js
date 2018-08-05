@@ -35,20 +35,26 @@ export class CanvasGame extends Component{
 		 */
 
 		const canvasAll = document.querySelectorAll('.canvasSnake');
-		let snakeLength = 10;
-		let snakeSpeed = .5;
+		let appleLocations = [];
+		const appleObj = new Image();
+					appleObj.src = "https://openclipart.org/download/183893/simple-apple.svg";
+					appleObj.onload = () => {
+						appleLocations = [
+							{
+								left: 200,
+								top: 200,
+								grabbed: false
+							}
+						];
+					}
+		const lengthOfOneSegment = 20;
+		let snakeLength = 3;
+		let snakeSpeed = 1;
+		let snakeWidth = 3;
 		let currentLocation = {
 				left: 10,
 				top: 10
 			}
-		let changeDirections = [
-				{
-					previousDirection: null, 
-					currentDirection: 'down', 
-					left: 10, 
-					top: 0
-				}
-			];
 		let direction = 'down';
 		let allLocations = [
 			{
@@ -57,6 +63,7 @@ export class CanvasGame extends Component{
 				direction: direction
 			}
 		];
+		let loose = false;
 
 
 		/*****************/
@@ -71,9 +78,17 @@ export class CanvasGame extends Component{
 				const ctx = canvas.getContext('2d');
 
 				ctx.clearRect(0, 0, Number(width), Number(height));
-				ctx.beginPath();
-				ctx.lineWidth = 2;
 
+				/*----------  drawing apples  ----------*/
+
+				Array.from(appleLocations).forEach(apple => {
+					// console.log(apple)
+					if(!apple.grabbed) ctx.drawImage(appleObj, apple.left, apple.top, 20, 20)
+				});
+
+
+				/*----------  detecting change direction from arrows keys  ----------*/
+				
 				switch(this.state.keys.keyCode){
 					case 37:// Arrow Left
 						direction = direction !== 'right'? 'left': direction;
@@ -88,6 +103,10 @@ export class CanvasGame extends Component{
 						direction = direction !== 'up'? 'down': direction;
 						break;
 				}
+
+
+				/*----------  moving snake  ----------*/
+
 				switch(direction){
 					case "up":
 						currentLocation.top -= snakeSpeed;
@@ -103,36 +122,81 @@ export class CanvasGame extends Component{
 						break;
 				}
 
+
+				/*----------   adding snake current location to array  ----------*/
+				
 				allLocations.push({
-					left: currentLocation.left,
-					top: currentLocation.top,
+					left: this.power(currentLocation.left, snakeSpeed),
+					top: this.power(currentLocation.top, snakeSpeed),
 					direction
 				});
 
+
+				/*----------  starting drawing and moving snake head to current location  ----------*/
+				
+				ctx.beginPath();
 				ctx.moveTo(currentLocation.left, currentLocation.top);
 				
-				let leftLength = snakeLength,
+
+				/*----------  declarate local variable  ----------*/
+								
+				let leftLength = snakeLength * lengthOfOneSegment,
 						i = 1;
+				
+				ctx.lineWidth = snakeWidth;
+
+				
+				/*----------  drawing all segments  ----------*/
 
 				while(leftLength > 0){
 					if(allLocations[allLocations.length - i] === undefined) break;
 					let {left, top, direction} = allLocations[allLocations.length - i];
 
-					
-
 					ctx.lineTo(left, top);
-					console.log(left, top)
 					leftLength--;
 					i++;
 				}
 
+
+				/*----------  coloring snake trace  ----------*/
+				
 				ctx.stroke();
+
+				/*----------  checking for possibly loose  ----------*/
+				
+				loose = checkIfLoose(allLocations, width, height, snakeLength * lengthOfOneSegment);
+
 			});
-			setTimeout(canvasAnimation, 1000/this.state.frameRate);
+			if(!loose) setTimeout(canvasAnimation, 1000/this.state.frameRate);
 		}
 
 
+		/*===========================================
+		=            game loose function            =
+		===========================================*/
+		
+
+		const checkIfLoose = (allLocations, width, height, snakeLength) => {
+			const {left, top} = allLocations[allLocations.length - 1];
+			if(
+				left <= 0 ||
+				top <= 0 ||
+				left >= width ||
+				top >= height
+				)return true;
+			else return false;
+		}
+
 		canvasAnimation();
+	}
+
+	power = (value, snakeSpeed) => {
+		if(String(snakeSpeed).split('.')[1] !== undefined){
+			const p = String(snakeSpeed).split('.')[1].length;
+			return Math.floor(value * Math.pow(10, p)) / Math.pow(10, p);
+		}else{
+			return value;
+		}
 	}
 
 	componentDidMount(){
@@ -142,6 +206,8 @@ export class CanvasGame extends Component{
 	render(){
 		return(
 			<canvas
+				width="500"
+				height="300"
 				className="canvasSnake">
 				{this.backTitle[this.state.lang] === undefined? this.backTitle['en']: this.backTitle[this.state.lang]}
 			</canvas>
