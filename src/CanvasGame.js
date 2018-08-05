@@ -35,7 +35,7 @@ export class CanvasGame extends Component{
 		 */
 
 		const canvasAll = document.querySelectorAll('.canvasSnake');
-		let snakeLength = 100;
+		let snakeLength = 10;
 		let snakeSpeed = .5;
 		let currentLocation = {
 				left: 10,
@@ -116,10 +116,12 @@ export class CanvasGame extends Component{
 
 				while(leftLength > 0){
 					if(allLocations[allLocations.length - i] === undefined) break;
-					const {left, top, direction} = allLocations[allLocations.length - i];
+					let {left, top, direction} = allLocations[allLocations.length - i];
+
+					
 
 					ctx.lineTo(left, top);
-
+					console.log(left, top)
 					leftLength--;
 					i++;
 				}
