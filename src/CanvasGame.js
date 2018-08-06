@@ -10,7 +10,11 @@ export class CanvasGame extends Component{
 			keys: {
 				key: '',
 				keyCode: 0
-			}
+			},
+			width: 500,
+			height: 300
+			// width: window.top.innerWidth - 4,
+			// height: window.top.innerHeight - 70
 		}
 
 		this.backTitle = {
@@ -24,10 +28,10 @@ export class CanvasGame extends Component{
 		
 		if(prevState.keys !== this.props.keys) this.setState({keys: this.props.keys})
 
-		if(prevState.again !== this.props.again && this.props.again) this.canvas()
+		if(prevProps.again !== this.props.again && this.props.again) this.canvas();
 	}
 
-	canvas = el => {
+	canvas = (looseIn = false) => {
 
 		/*
 		 *
@@ -35,28 +39,47 @@ export class CanvasGame extends Component{
 		 *
 		 */
 
+
+		 /*----------  changeable variables  ----------*/
+		 
+
+		const width = this.state.width,
+					height = this.state.height;
+		const lengthOfOneSegmentBeforeEdited = 20;
+		const snakeSpeed = 1;
+		const snakeWidth = 3;
+		const startLocation = {
+			left: 10,
+			top: 10
+		}
+		const startDirection = 'down';
+		const appleRepeatSpeed = 3;
+		const frameRate = this.state.frameRate;
+
+
+		/*----------  variables which cannot be changed  ----------*/
+		
+
 		const canvasAll = document.querySelectorAll('.canvasSnake');
-		let width, height;
 		let appleLocations = [];
 		const appleContent = "*",
 					appleFont = '32px serif';
-		const lengthOfOneSegment = 20;
 		let snakeLength = 1;
-		let snakeSpeed = 1;
-		let snakeWidth = 3;
-		let currentLocation = {
-				left: 100,
-				top: 100
-			}
-		let direction = 'down';
+		let currentLocation = {...startLocation}
+		let direction;
 		let allLocations = [
 			{
-				left: currentLocation.left, 
-				top: currentLocation.top,
-				direction: direction
+				left: startLocation.left, 
+				top: startLocation.top,
+				direction: startDirection
 			}
 		];
-		let loose = false;
+		let loose = looseIn;
+		let applesLoop = null;
+		const snakeSpeedCalculated = snakeSpeed * (60 / frameRate);
+		const lengthOfOneSegment = lengthOfOneSegmentBeforeEdited * (frameRate / 60);
+		let fpsCalc = 0;
+		let fpsLoop = null;
 
 
 		/*****************/
@@ -65,9 +88,6 @@ export class CanvasGame extends Component{
 
 		const canvasAnimation = () => {
 			Array.from(canvasAll).forEach(canvas => {
-				width = canvas.offsetWidth,
-				height = canvas.offsetHeight;
-
 				const ctx = canvas.getContext('2d');
 
 				ctx.clearRect(0, 0, Number(width), Number(height));
@@ -89,6 +109,9 @@ export class CanvasGame extends Component{
 					case 40:// Arrow Down
 						direction = direction !== 'up'? 'down': direction;
 						break;
+					default: // We're using action to Arrow Down
+						direction = 'down';
+						break;
 				}
 
 
@@ -96,16 +119,16 @@ export class CanvasGame extends Component{
 
 				switch(direction){
 					case "up":
-						currentLocation.top -= snakeSpeed;
+						currentLocation.top -= snakeSpeedCalculated;
 						break;
 					case "down":
-						currentLocation.top += snakeSpeed;
+						currentLocation.top += snakeSpeedCalculated;
 						break;
 					case "left":
-						currentLocation.left -= snakeSpeed;
+						currentLocation.left -= snakeSpeedCalculated;
 						break;
 					case "right":
-						currentLocation.left += snakeSpeed;
+						currentLocation.left += snakeSpeedCalculated;
 						break;
 				}
 
@@ -200,11 +223,15 @@ export class CanvasGame extends Component{
 			/*----------  game loop  ----------*/
 			
 
-			if(!loose) setTimeout(canvasAnimation, 1000/this.state.frameRate);
+			if(!loose) setTimeout(canvasAnimation, 1000/frameRate);
 			else {
 				this.props.endGamePoints(snakeLength - 1);
-				clearInterval(this.applesInt)
+				clearInterval(applesLoop)
+				clearTimeout(fpsLoop)
+				// console.log('end')
 			}
+
+			fpsCalc++;
 		}
 
 
@@ -224,25 +251,51 @@ export class CanvasGame extends Component{
 			else return false;
 		}
 
-		this.applesInt = setInterval(() => {
+		/*=====================================
+		=            adding apples            =
+		=====================================*/
+		
+
+		applesLoop = setInterval(() => {
 			if(!loose){
 				appleLocations.push({
 					left: width === undefined?(
 							Math.random() * 450
 						):(
-							Math.random() * width
+							Math.random() * (width - 20)
 						),
 					top: width === undefined?(
 							Math.random() * 280
 						):(
-							Math.random() * height
+							Math.random() * (height - 20)
 						),
 					grabbed: false
 				})
+				// console.log(appleLocations[appleLocations.length - 1])
 			}
-		},3000);
+		}, appleRepeatSpeed * 1000);
 
-		canvasAnimation();
+
+		
+		/*================================================
+		=            fps calculating function            =
+		================================================*/
+		
+		const fpsFunction = () => {
+			this.props.fps(fpsCalc)
+			fpsCalc = 0;
+
+			fpsLoop = setTimeout(fpsFunction,1000);
+		}
+
+		/*============================================
+		=            first time induction            =
+		============================================*/
+		
+		
+		
+		if(!loose) canvasAnimation();
+		fpsFunction();
 	}
 
 	power = (value, snakeSpeed) => {
@@ -255,15 +308,15 @@ export class CanvasGame extends Component{
 	}
 
 	componentDidMount(){
-		this.canvas();
+		this.canvas(true);
 	}
 
 	render(){
 		return(
 			<canvas
-				width="500"
-				height="300"
-				className="canvasSnake">
+				width={this.state.width}
+				height={this.state.height}
+				className="canvasSnake loose">
 				{this.backTitle[this.state.lang] === undefined? this.backTitle['en']: this.backTitle[this.state.lang]}
 			</canvas>
 		);

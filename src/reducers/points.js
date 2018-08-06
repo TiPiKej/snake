@@ -1,7 +1,8 @@
-export const points = (state = 0, {type, points}) => {
+export const points = (state = '', {type, points}) => {
 	switch(type){
 		case "ADD_POINTS":
-			return points
+			if(state.length > 0) return String(`${state},${points}`)
+			else return String(`${points}`)
 		default: 
 			return state
 	}

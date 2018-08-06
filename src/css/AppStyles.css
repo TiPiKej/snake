@@ -22,4 +22,68 @@
 	background: #ffe0b2;
 	min-height: 100vh;
 	min-width: 100vw;
+	position: relative;
+}
+
+.App > .changeLanguage{
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: rgba(255, 224, 178, .5);
+	border-left: 2px solid #000;
+	border-bottom: 2px solid #000;
+	padding: 10px 20px;
+}
+
+.App > .infoBoard{
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: rgba(255, 224, 178, .5);
+	border-bottom: 2px solid #000;
+	border-right: 2px solid #000;
+	padding: 10px 20px;
+	transition: all .5s ease;
+}
+
+.App > .infoBoard > .title{
+	font-weight: bold;
+}
+
+.App > .infoBoard > .title + .infoCounts{
+	opacity: 0;
+	width: 0;
+	display: block;
+	transition: all .5s ease;
+}
+
+.App > .infoBoard > .title:hover + .infoCounts,
+.App > .infoBoard > .infoCounts:hover{
+	opacity: 1;
+	width: 100%;
+}
+
+.App > .infoBoard > ul{
+	display: block;
+	list-style-type: none;
+	max-height: 10em;
+	overflow-y: scroll;
+}
+
+.App > .infoBoard > ul > li{
+	line-height: 2em;
+}
+
+.App > .infoBoard > .slideButton{
+	padding: 10px 20px;
+	margin-top: 10px;
+	border: 2px solid #000;
+	outline: none;
+	background: #ffa000;
+	cursor: pointer;
+	transition: all .5s ease;
+}
+
+.App > .infoBoard > .slideButton:hover{
+	background: #ffd149;
 }
