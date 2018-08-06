@@ -4,7 +4,7 @@ export const keyDown = ({key, keyCode}) => ({
 	keyCode
 });
 
-export const keyUp = ({key, keyCode}) => ({
+export const keyUp = ({key = '', keyCode = null}) => ({
 	type: "KEY_UP",
 	key,
 	keyCode

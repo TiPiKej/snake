@@ -1,4 +1,5 @@
 .gameCanvasWrapper{
+	position: relative;
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
@@ -19,6 +20,7 @@
 	outline: none;
 	border: 2px solid #000;
 	background: #ffa000;
+	transition: all .5s ease;
 }
 
 .gameCanvasWrapper canvas.loose ~ .playAgain{
@@ -32,9 +34,14 @@
 	border-right: 1px solid #000;
 }
 
+.gameCanvasWrapper .playAgain:hover{
+	background: #ffd149;
+}
+
 canvas{
 	background: #66bb6a;
 	border: 2px solid #000;
+	position: relative;
 }
 
 canvas.activeEffect{
@@ -46,4 +53,11 @@ canvas.activeEffect{
 	0%{ border-style: dotted; }
 	50%{ border-style: dashed; }
 	100%{ border-style: dotted; }
+}
+
+.gameCanvasWrapper .fps{
+	position: absolute;
+	bottom: 0;
+	right: 7px;
+	opacity: .5;
 }
