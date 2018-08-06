@@ -41,7 +41,7 @@ export class CanvasGame extends Component{
 		const appleContent = "*",
 					appleFont = '32px serif';
 		const lengthOfOneSegment = 20;
-		let snakeLength = 1;
+		let snakeLength = 3;
 		let snakeSpeed = 1;
 		let snakeWidth = 3;
 		let currentLocation = {
