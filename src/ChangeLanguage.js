@@ -6,10 +6,10 @@ export class ChangeLanguageClass extends Component{
 	constructor(props){
 		super(props);
 
-		if(localStorage.getItem('lang') !== undefined) this.props.changeLang(localStorage.getItem('lang'));
+		if(localStorage.getItem('lang') !== null) this.props.changeLang(localStorage.getItem('lang'));
 
 		this.state = {
-			lang: localStorage.getItem('lang') === undefined? props.lang: localStorage.getItem('lang'),
+			lang: localStorage.getItem('lang') === null? props.lang: localStorage.getItem('lang'),
 			text: {
 				pl: "Zmień język",
 				en: "Change language"
