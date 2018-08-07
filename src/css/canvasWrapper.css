@@ -14,10 +14,28 @@
 .gameCanvasWrapper .playAgain{
 	display: none;
 	position: absolute;
+	cursor: pointer;
+	padding: 10px 20px;
+	margin: 10px;
+	outline: none;
+	border: 2px solid #000;
+	background: #ffa000;
+	transition: all .5s ease;
 }
 
 .gameCanvasWrapper canvas.loose ~ .playAgain{
 	display: block;
+}
+
+.gameCanvasWrapper .playAgain:active{
+	border-top: 3px solid #000;
+	border-left: 3px solid #000;
+	border-bottom: 1px solid #000;
+	border-right: 1px solid #000;
+}
+
+.gameCanvasWrapper .playAgain:hover{
+	background: #ffd149;
 }
 
 canvas{
@@ -42,69 +60,4 @@ canvas.activeEffect{
 	bottom: 0;
 	right: 7px;
 	opacity: .5;
-}
-
-.gameCanvasWrapper .settingsWrapper{
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	display: none;
-	flex-direction: row-reverse;
-	align-items: flex-end;
-	justify-content: center;
-}
-
-.gameCanvasWrapper canvas.loose ~ .settingsWrapper{
-	display: flex;
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsIcon:before{
-	content: '\2699';
-	cursor: pointer;
-	font-size: 23px;
-	padding: 5px;
-	transition: all .5s ease;
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsContent.active + .settingsIcon:before{
-	transform: rotateZ(-90deg);
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsContent{
-	display: block;
-	opacity: 0;
-	transition: all .5s ease;
-	position: fixed;
-	bottom: -10%;
-	left: 30px;
-	background: #cbae82;
-	padding: 0 5px;
-	margin: 5px;
-	border: #ffffe4 solid 2px;
-	text-align: center;
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsContent.active{
-	bottom: 0;
-	opacity: 1;
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsContent input,
-.gameCanvasWrapper .settingsWrapper .settingsContent select{
-	border-radius: 12px;
-	border: none;
-	padding: 5px 10px;
-	margin: 10px;
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsContent select{
-	border-radius: unset;
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsContent div{
-	border-bottom: 1px dotted #ffffe4;
-}
-
-.gameCanvasWrapper .settingsWrapper .settingsContent  div:last-child{
-	border-bottom: none;
 }

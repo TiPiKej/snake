@@ -12,8 +12,9 @@ export class CanvasGame extends Component{
 				keyCode: 0
 			},
 			width: 500,
-			height: 300,
-			settings: []
+			height: 300
+			// width: window.top.innerWidth - 4,
+			// height: window.top.innerHeight - 70
 		}
 
 		this.backTitle = {
@@ -23,31 +24,11 @@ export class CanvasGame extends Component{
 	}
 
 	componentDidUpdate(prevProps, prevState){
-		if(prevState.lang !== this.props.lang) this.setState({lang: this.props.lang});
+		if(prevState.lang !== this.props.lang) this.setState({lang: this.props.lang})
 		
-		if(prevState.keys !== this.props.keys) this.setState({keys: this.props.keys});
+		if(prevState.keys !== this.props.keys) this.setState({keys: this.props.keys})
 
-		if(prevProps.again !== this.props.again && this.props.again){
-			this.canvas();
-		}
-
-		if(prevProps.settings !== this.props.settings) {
-			const {width, height} = this.toNumber(this.props.settings);
-			this.setState({
-				settings: this.props.settings,
-				width,
-				height
-			});
-		}
-	}
-
-	toNumber = (arr) => {
-		let ret = {};
-		Object.keys(arr).map(el => {
-			if(isNaN(Number(arr[el]))) ret[el] = arr[el]
-			else ret[el] = Number(arr[el])
-		});
-		return ret
+		if(prevProps.again !== this.props.again && this.props.again) this.canvas();
 	}
 
 	canvas = (looseIn = false) => {
@@ -62,21 +43,19 @@ export class CanvasGame extends Component{
 		 /*----------  changeable variables  ----------*/
 		 
 
-		const {
-			width, 
-			height,
-			lengthOfOneSegmentBeforeEdited,
-			snakeSpeed,
-			snakeWidth,
-			startDirection,
-			appleRepeatSpeed,
-			frameRate
-		} = this.toNumber(this.state.settings);
-
+		const width = this.state.width,
+					height = this.state.height;
+		const lengthOfOneSegmentBeforeEdited = 20;
+		const snakeSpeed = 1;
+		const snakeWidth = 3;
 		const startLocation = {
-			left: Number(this.state.settings.startLocationLeft),
-			top: Number(this.state.settings.startLocationTop)
+			left: 10,
+			top: 10
 		}
+		const startDirection = 'down';
+		const appleRepeatSpeed = 3;
+		const frameRate = this.state.frameRate;
+
 
 		/*----------  variables which cannot be changed  ----------*/
 		
@@ -131,7 +110,7 @@ export class CanvasGame extends Component{
 						direction = direction !== 'up'? 'down': direction;
 						break;
 					default: // We're using action to Arrow Down
-						direction = allLocations[allLocations.length - 1].direction;
+						direction = 'down';
 						break;
 				}
 
@@ -250,11 +229,6 @@ export class CanvasGame extends Component{
 				clearInterval(applesLoop)
 				clearTimeout(fpsLoop)
 				// console.log('end')
-				const keys = {
-					key: '',
-					keyCode: 0
-				}
-				this.setState({keys})
 			}
 
 			fpsCalc++;
@@ -331,6 +305,10 @@ export class CanvasGame extends Component{
 		}else{
 			return value;
 		}
+	}
+
+	componentDidMount(){
+		this.canvas(true);
 	}
 
 	render(){

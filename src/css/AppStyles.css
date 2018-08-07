@@ -5,6 +5,14 @@
 	font-family: Fira code, Arial;
 }
 
+.App *{
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
 .App{
 	display: flex;
 	flex-direction: row;
@@ -15,27 +23,6 @@
 	min-height: 100vh;
 	min-width: 100vw;
 	position: relative;
-}
-
-button{
-	cursor: pointer;
-	padding: 10px 20px;
-	margin: 10px;
-	outline: none;
-	border: 2px solid #000;
-	background: #ffa000;
-	transition: all .5s ease;
-}
-
-button:active{
-	border-top: 3px solid #000;
-	border-left: 3px solid #000;
-	border-bottom: 1px solid #000;
-	border-right: 1px solid #000;
-}
-
-button:hover{
-	background: #ffd149;
 }
 
 .App > .changeLanguage{
@@ -85,4 +72,18 @@ button:hover{
 
 .App > .infoBoard > ul > li{
 	line-height: 2em;
+}
+
+.App > .infoBoard > .slideButton{
+	padding: 10px 20px;
+	margin-top: 10px;
+	border: 2px solid #000;
+	outline: none;
+	background: #ffa000;
+	cursor: pointer;
+	transition: all .5s ease;
+}
+
+.App > .infoBoard > .slideButton:hover{
+	background: #ffd149;
 }
