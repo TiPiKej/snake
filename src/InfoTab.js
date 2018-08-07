@@ -55,11 +55,7 @@ export class InfoTabClass extends Component{
 					</div>
 					{this.state.listOn?(
 						<ul>
-							{this.state.points.map((el, nr) => (
-								<li key={nr}>
-									{nr + 1}# {this.lang[this.state.lang] === undefined?this.lang['en'].content: this.lang[this.state.lang].content} - {el}
-								</li>
-								))}
+							{this.state.points.map((el, nr) => <li key={nr}>{nr + 1}# {this.lang[this.state.lang] === undefined?this.lang['en'].content: this.lang[this.state.lang].content} - {el}</li>)}
 						</ul>
 					):null}
 					<button 
