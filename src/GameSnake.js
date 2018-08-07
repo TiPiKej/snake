@@ -5,6 +5,7 @@ import { CanvasGame } from './CanvasGame';
 import { ShowFps } from './ShowFps';
 import { TitleSnake } from './TitleSnake';
 import { StartGame } from './StartGame';
+import { Settings } from './Settings';
 import './css/canvasWrapper.css';
 
 export class Snake extends Component{
@@ -22,7 +23,8 @@ export class Snake extends Component{
 				frameRate: 60,
 				showFps: true
 			},
-			points: []
+			points: [],
+			setArray: []
 		}
 
 		document.addEventListener("keydown", el => this.props.keyDown(el))
@@ -55,6 +57,10 @@ export class Snake extends Component{
 		this.setState({fps})
 	}
 
+	settingsChange = (setArray) => {
+		this.setState({setArray});
+	}
+
 	render(){
 		return(
 			<div className="gameCanvasWrapper">
@@ -65,7 +71,8 @@ export class Snake extends Component{
 					keys={this.state.keys}
 					endGamePoints={this.props.addPoints}
 					again={this.state.again}
-					fps={this.fps} />
+					fps={this.fps}
+					settings={this.state.setArray} />
 				<StartGame 
 					lang={this.props.lang}
 					onPlayAgain={this.playAgain}
@@ -74,6 +81,9 @@ export class Snake extends Component{
 					<ShowFps
 						fps={this.state.fps} />
 					):null}
+				<Settings 
+					lang={this.props.lang}
+					settingsArray={this.settingsChange} />
 			</div>
 		);
 	}
