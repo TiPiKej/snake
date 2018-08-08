@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { keyDown, keyUp, addPoints } from './actions/';
-import { CanvasGame } from './CanvasGame';
-import { ShowFps } from './ShowFps';
-import { TitleSnake } from './TitleSnake';
-import { StartGame } from './StartGame';
-import { Settings } from './Settings';
+import { keyDown, addPoints } from './actions/';
 import './css/canvasWrapper.css';
+
+import { CanvasGame }  from './snakeComponents/CanvasGame';
+import { ShowFps    }  from './snakeComponents/ShowFps';
+import { TitleSnake }  from './snakeComponents/TitleSnake';
+import { StartGame  }  from './snakeComponents/StartGame';
+import { Settings   }  from './snakeComponents/Settings';
+import { InfoTab    }  from './snakeComponents/InfoTab';
 
 export class Snake extends Component{
 	constructor(props){
@@ -17,18 +19,15 @@ export class Snake extends Component{
 				key: '',
 				keyCode: null
 			},
-			again: false,
+			gameCounter: 0,
 			fps: null,
-			settings: {
-				frameRate: 60,
-				showFps: true
-			},
+			settings: {},
 			points: [],
-			setArray: []
+			setArray: {},
+			looseCounter: 0
 		}
 
 		document.addEventListener("keydown", el => this.props.keyDown(el))
-		document.addEventListener("keyup", el => this.props.keyUp(el))
 	}
 
 	componentDidUpdate(prevProps, prevState){
@@ -42,37 +41,47 @@ export class Snake extends Component{
 	}
 	
 	playAgain = ({currentTarget}) => {
+		// toggle className of play again button
 		const canvasList = Array.from(currentTarget.parentNode.children).filter(el => el.tagName.toLowerCase() === 'canvas')
 		canvasList.forEach(el => {
 			el.className = el.className.split(' loose')[0];
 		});
-		this.setState({again: true})
+		// call out canvas game to start
+		this.setState({gameCounter: this.state.gameCounter + 1})
+		// reset keys clicked
 		this.props.keyDown({key: '', keyCode: null})
-		setTimeout(() => this.setState({
-			again: false
-		}),10)
 	}
 
 	fps = fps => {
+		// catch frames variable from canvas component
 		this.setState({fps})
 	}
 
-	settingsChange = (setArray) => {
-		this.setState({setArray});
+	settingsChange = (settings) => {
+		this.setState({settings});
+	}
+
+	onLoose = (canvas) => {
+		// increment counter value to init other functions
+		this.setState({looseCounter: this.state.looseCounter + 1});
+
+		canvas.className += ' loose';
 	}
 
 	render(){
 		return(
 			<div className="gameCanvasWrapper">
+      	<InfoTab />
 				<TitleSnake lang={this.props.lang} />
 				<CanvasGame 
 					lang={this.props.lang}
 					frameRate={this.state.settings.frameRate}
 					keys={this.state.keys}
 					endGamePoints={this.props.addPoints}
-					again={this.state.again}
+					gameCounter={this.state.gameCounter}
 					fps={this.fps}
-					settings={this.state.setArray} />
+					settings={this.state.settings}
+					onLoose={this.onLoose} />
 				<StartGame 
 					lang={this.props.lang}
 					onPlayAgain={this.playAgain}
@@ -97,6 +106,6 @@ const mapStateToProps = (state) => {
   	points: state.points,
   }
 };
-const mapDispatchToProps = { keyDown, keyUp, addPoints };
+const mapDispatchToProps = { keyDown, addPoints };
 
 export const GameSnake = connect(mapStateToProps, mapDispatchToProps)(Snake);

@@ -16,14 +16,12 @@ export class InfoTabClass extends Component{
 		pl: {
 			title: "Tablica informacyjna",
 			content: "punkty",
-			howMuch: "wpisów",
-			slide: "wsuń / wysuń"
+			howMuch: "wpisów"
 		},
 		en: {
 			title: "Information board",
 			content: "points",
-			howMuch: "entires",
-			slide: "slide"
+			howMuch: "entires"
 		}
 	}
 
@@ -37,38 +35,49 @@ export class InfoTabClass extends Component{
 		if(prevProps.lang !== this.props.lang) this.setState({lang: this.props.lang});
 	}
 
-	slide = () => {
-		this.setState({listOn: this.state.listOn? false: true})
+	slide = ({currentTarget}) => {
+		const {parentNode} = currentTarget;
+		let {classList} = parentNode;
+		let isInside = false;
+
+		Array.from(classList).forEach(el => isInside = (el === 'hide')? true: isInside)
+
+		localStorage.setItem('showInfoBoard', isInside);
+
+		if(isInside) classList.remove('hide')
+		else classList.add('hide')
+		// this.setState({listOn: this.state.listOn? false: true})
 	}
 
 	render(){
 		return(
-			this.state.points.length > 0? (
+			<div className={`infoBoardWrapper${
+					localStorage.getItem('showInfoBoard') === 'false'? ' hide': ''
+				}${
+					this.state.points.length === 0? ' notVisibility' : ''
+				}`}>
 				<div className="infoBoard">
+
 					<p className="title">
 						{ this.lang[this.state.lang] === undefined? this.lang['en'].title : this.lang[this.state.lang].title }
 					</p>
-					<div className="infoCounts">
-						{ this.lang[this.state.lang] === undefined? this.lang['en'].howMuch : this.lang[this.state.lang].howMuch }
-						:
-						{this.state.points.length}
-					</div>
-					{this.state.listOn?(
-						<ul>
-							{this.state.points.map((el, nr) => (
-								<li key={nr}>
-									{nr + 1}# {this.lang[this.state.lang] === undefined?this.lang['en'].content: this.lang[this.state.lang].content} - {el}
-								</li>
-								))}
-						</ul>
-					):null}
-					<button 
-						className="slideButton"
-						onClick={this.slide}>
-						{ this.lang[this.state.lang] === undefined? this.lang['en'].slide : this.lang[this.state.lang].slide }
-					</button>
+
+					<ul>
+						{this.state.points.map((el, nr) => (
+							<li key={nr}>
+								{nr + 1}# {this.lang[this.state.lang] === undefined?this.lang['en'].content: this.lang[this.state.lang].content} - {el}
+							</li>
+							))}
+					</ul>
+
 				</div>
-			) : null
+
+				<p
+					className="infoBoardTriangle"
+					onClick={this.slide}>
+					&#9664;
+				</p>
+			</div>
 		);
 	}
 }

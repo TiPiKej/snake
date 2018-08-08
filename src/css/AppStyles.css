@@ -15,6 +15,7 @@
 	min-height: 100vh;
 	min-width: 100vw;
 	position: relative;
+	overflow-x: hidden;
 }
 
 button{
@@ -38,51 +39,44 @@ button:hover{
 	background: #ffd149;
 }
 
-.App > .changeLanguage{
+.App .changeLanguageWrapper{
 	position: absolute;
 	top: 0;
 	right: 0;
+	display: flex;
+	flex-direction: row-reverse;
+	align-items: center;
+}
+
+.App .changeLanguageWrapper .changeLanguage{
 	background: rgba(255, 224, 178, .5);
 	border-left: 2px solid #000;
 	border-bottom: 2px solid #000;
 	padding: 10px 20px;
+	transition: width .5s ease, opacity .5s ease;
+	max-height: 42px;
+	width: 100%;
+	overflow: hidden;
+	opacity: 1;
 }
 
-.App > .infoBoard{
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: rgba(255, 224, 178, .5);
-	border-bottom: 2px solid #000;
-	border-right: 2px solid #000;
-	padding: 10px 20px;
-	transition: all .5s ease;
-}
-
-.App > .infoBoard > .title{
-	font-weight: bold;
-}
-
-.App > .infoBoard > .title + .infoCounts{
-	opacity: 0;
+.App .changeLanguageWrapper.hide .changeLanguage{
 	width: 0;
 	display: block;
-	transition: all .5s ease;
+	padding: 0;
+	border: none;
+	opacity: 0;
 }
 
-.App > .infoBoard > .title:hover + .infoCounts,
-.App > .infoBoard > .infoCounts:hover{
-	opacity: 1;
-	width: 100%;
+.App .changeLanguageWrapper .changeLanguageTriangle{
+	margin-right: 3px;
+	height: 20px;
+	width: 20px;
+	text-align: right;
+	cursor: pointer;
+	transform: rotateZ(180deg);
 }
 
-.App > .infoBoard > ul{
-	display: block;
-	list-style-type: none;
-	max-height: 10em;
-	overflow-y: scroll;
-}
-
-.App > .infoBoard > ul > li{
-	line-height: 2em;
+.App .changeLanguageWrapper.hide .changeLanguage + .changeLanguageTriangle{
+	transform: rotateZ(0deg);
 }

@@ -6,14 +6,14 @@ export class CanvasGame extends Component{
 
 		this.state = {
 			lang: props.lang === undefined? "en": props.lang,
-			frameRate: props.frameRate === undefined? 30: props.frameRate,
 			keys: {
 				key: '',
 				keyCode: 0
 			},
 			width: 500,
 			height: 300,
-			settings: []
+			settings: [],
+			gameCounter: 0
 		}
 
 		this.backTitle = {
@@ -27,7 +27,8 @@ export class CanvasGame extends Component{
 		
 		if(prevState.keys !== this.props.keys) this.setState({keys: this.props.keys});
 
-		if(prevProps.again !== this.props.again && this.props.again){
+		if(prevProps.gameCounter !== this.props.gameCounter) {
+			this.setState({gameCounter: this.props.gameCounter})
 			this.canvas();
 		}
 
@@ -44,13 +45,13 @@ export class CanvasGame extends Component{
 	toNumber = (arr) => {
 		let ret = {};
 		Object.keys(arr).map(el => {
-			if(isNaN(Number(arr[el]))) ret[el] = arr[el]
-			else ret[el] = Number(arr[el])
+			if(isNaN(Number(arr[el]))) return ret[el] = arr[el]
+			else return ret[el] = Number(arr[el])
 		});
 		return ret
 	}
 
-	canvas = (looseIn = false) => {
+	canvas = () => {
 
 		/*
 		 *
@@ -61,21 +62,26 @@ export class CanvasGame extends Component{
 
 		 /*----------  changeable variables  ----------*/
 		 
-
 		const {
 			width, 
 			height,
 			lengthOfOneSegmentBeforeEdited,
 			snakeSpeed,
 			snakeWidth,
-			startDirection,
 			appleRepeatSpeed,
-			frameRate
+			frameRate,
+			startLocationLeft,
+			startLocationTop
 		} = this.toNumber(this.state.settings);
 
+		const {
+			startDirection,
+			showFps
+		} = this.state.settings;
+
 		const startLocation = {
-			left: Number(this.state.settings.startLocationLeft),
-			top: Number(this.state.settings.startLocationTop)
+			left: startLocationLeft,
+			top: startLocationTop
 		}
 
 		/*----------  variables which cannot be changed  ----------*/
@@ -95,13 +101,19 @@ export class CanvasGame extends Component{
 				direction: startDirection
 			}
 		];
-		let loose = looseIn;
+		let loose = false;
 		let applesLoop = null;
 		const snakeSpeedCalculated = snakeSpeed * (60 / frameRate);
 		const lengthOfOneSegment = lengthOfOneSegmentBeforeEdited * (frameRate / 60);
 		let fpsCalc = 0;
 		let fpsLoop = null;
 
+
+		// reset keys clicked
+		// i must to do this like that 'cause setState is async function
+		this.state = {
+			keys: {key: '', keyCode: null}
+		}
 
 		/*****************/
 		/* Game function */
@@ -130,7 +142,7 @@ export class CanvasGame extends Component{
 					case 40:// Arrow Down
 						direction = direction !== 'up'? 'down': direction;
 						break;
-					default: // We're using action to Arrow Down
+					default: // We're using previous action or if it's the first time - we using user settings
 						direction = allLocations[allLocations.length - 1].direction;
 						break;
 				}
@@ -150,6 +162,10 @@ export class CanvasGame extends Component{
 						break;
 					case "right":
 						currentLocation.left += snakeSpeedCalculated;
+						break;
+					default:
+						// do nothing
+						// i add this to eliminate warning
 						break;
 				}
 
@@ -187,8 +203,8 @@ export class CanvasGame extends Component{
 				/*----------   adding snake current location to array  ----------*/
 				
 				allLocations.push({
-					left: this.power(currentLocation.left, snakeSpeed),
-					top: this.power(currentLocation.top, snakeSpeed),
+					left: currentLocation.left,
+					top: currentLocation.top,
 					direction
 				});
 
@@ -210,7 +226,7 @@ export class CanvasGame extends Component{
 
 				while(leftLength > 0){
 					if(allLocations[allLocations.length - i] === undefined) break;
-					let {left, top, direction} = allLocations[allLocations.length - i];
+					let {left, top/*, direction*/} = allLocations[allLocations.length - i];
 
 
 				
@@ -233,11 +249,20 @@ export class CanvasGame extends Component{
 				
 				ctx.stroke();
 
-				/*----------  checking for possibly loose  ----------*/
+				/*----------  checking for possibly loose from hitting to border  ----------*/
 				
-				loose = loose? true: checkIfLoose(allLocations, width, height, snakeLength * lengthOfOneSegment);
+				if(!loose){
+					const {left, top} = allLocations[allLocations.length - 1];
 
-				if(loose) canvas.className += ' loose';
+					if(
+						left <= 0 ||
+						top <= 0 ||
+						left >= width ||
+						top >= height
+					) loose = true;
+				}
+
+				if(loose) this.props.onLoose(canvas);
 
 			});
 
@@ -246,35 +271,19 @@ export class CanvasGame extends Component{
 
 			if(!loose) setTimeout(canvasAnimation, 1000/frameRate);
 			else {
+				// this is induce when player loose game
 				this.props.endGamePoints(snakeLength - 1);
+				
+				// stop adding apples
 				clearInterval(applesLoop)
+
+				// stop fps counter
 				clearTimeout(fpsLoop)
-				// console.log('end')
-				const keys = {
-					key: '',
-					keyCode: 0
-				}
-				this.setState({keys})
 			}
 
+			// increment value of fps counter
+
 			fpsCalc++;
-		}
-
-
-		/*===========================================
-		=            game loose function            =
-		===========================================*/
-		
-
-		const checkIfLoose = (allLocations, width, height, snakeLength) => {
-			const {left, top} = allLocations[allLocations.length - 1];
-			if(
-				left <= 0 ||
-				top <= 0 ||
-				left >= width ||
-				top >= height
-				)return true;
-			else return false;
 		}
 
 		/*=====================================
@@ -321,16 +330,7 @@ export class CanvasGame extends Component{
 		
 		
 		if(!loose) canvasAnimation();
-		fpsFunction();
-	}
-
-	power = (value, snakeSpeed) => {
-		if(String(snakeSpeed).split('.')[1] !== undefined){
-			const p = String(snakeSpeed).split('.')[1].length;
-			return Math.floor(value * Math.pow(10, p)) / Math.pow(10, p);
-		}else{
-			return value;
-		}
+		if(showFps) fpsFunction();
 	}
 
 	render(){

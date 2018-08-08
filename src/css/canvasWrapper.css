@@ -101,10 +101,83 @@ canvas.activeEffect{
 	border-radius: unset;
 }
 
-.gameCanvasWrapper .settingsWrapper .settingsContent div{
+.gameCanvasWrapper .settingsWrapper .settingsContent .changeSettingsWrapper{
+	max-height: 500px;
+	overflow-y: scroll;
+}
+
+.gameCanvasWrapper .settingsWrapper .settingsContent .inputWrapper{
 	border-bottom: 1px dotted #ffffe4;
 }
 
-.gameCanvasWrapper .settingsWrapper .settingsContent  div:last-child{
-	border-bottom: none;
+.gameCanvasWrapper .infoBoardWrapper{
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	transition: left .5s ease, opacity .5s ease;
+	opacity: 1;
+}
+
+.gameCanvasWrapper .infoBoardWrapper.hide{
+	position: fixed;
+	top: 0;
+	left: -250px;
+}
+
+.gameCanvasWrapper .infoBoardWrapper.notVisibility{
+	opacity: 0;
+	pointer-events: none;
+}
+
+.gameCanvasWrapper .infoBoardWrapper .infoBoardTriangle{
+	height: 20px;
+	width: 20px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.gameCanvasWrapper .infoBoardWrapper.hide .infoBoardTriangle{
+	transform: rotateZ(180deg);
+}
+
+.gameCanvasWrapper .infoBoard{
+	background: rgba(255, 224, 178, .5);
+	border-bottom: 2px solid #000;
+	border-right: 2px solid #000;
+	padding: 10px 20px;
+	transition: all .5s ease;
+	width: 250px;
+	text-align: center;
+}
+
+.gameCanvasWrapper .infoBoard > .title{
+	font-weight: bold;
+	font-size: 15px;
+}
+
+.gameCanvasWrapper .infoBoard > .title + .infoCounts{
+	opacity: 0;
+	width: 0;
+	display: block;
+	transition: all .5s ease;
+}
+
+.gameCanvasWrapper .infoBoard > .title:hover + .infoCounts,
+.gameCanvasWrapper .infoBoard > .infoCounts:hover{
+	opacity: 1;
+	width: 100%;
+}
+
+.gameCanvasWrapper .infoBoard > ul{
+	display: block;
+	list-style-type: none;
+	max-height: 10em;
+	overflow-y: scroll;
+}
+
+.gameCanvasWrapper .infoBoard > ul > li{
+	line-height: 2em;
 }

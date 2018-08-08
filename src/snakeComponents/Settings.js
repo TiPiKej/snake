@@ -103,8 +103,22 @@ export class Settings extends Component{
 						en: "Frames per second"
 					},
 					value: "60"
+				},
+				{
+					what: "showFps",
+					type: 'checkbox',
+					toolTip: {
+						pl: "Pokaż licznik fps",
+						en: "Show fps counter"
+					},
+					visualEffects: true,
+					value: true
 				}
-			]
+			],
+			sendButton: {
+				pl: "Wyślij",
+				en: "Send"
+			}
 		}
 	}
 
@@ -129,16 +143,16 @@ export class Settings extends Component{
 	}
 
 	changeSettingsValues = ({currentTarget}, {what}, nr) => {
+		const {type} = currentTarget;
 		let inputs = this.state.inputs.slice();
-		inputs[nr]['value'] = currentTarget.value;
+		if(type === 'checkbox') inputs[nr]['value'] = inputs[nr]['value']? false: true;
+		else inputs[nr]['value'] = currentTarget.value;
 		this.setState({inputs})
 	}
 
 	sendArray = (element, startUp = false) => {
 		let setArray = {};
-		this.state.inputs.map(el => {
-			setArray[el.what] = el.value
-		})
+		this.state.inputs.map(el => setArray[el.what] = el.value)
 		this.props.settingsArray(setArray)
 		if(!startUp) this.showHide(element, true);
 	}
@@ -147,10 +161,15 @@ export class Settings extends Component{
 		return(
 			<div className="settingsWrapper">
 				<div className="settingsContent">
-					{this.state.inputs.map((el, nr) => (
-						<div key={`${el.what}${nr}`}>
-							{el.toolTip[this.state.lang] === undefined? el.toolTip['en']: el.toolTip[this.state.lang]}
-							{el.type === 'select'?(
+					<div className="changeSettingsWrapper">
+						{this.state.inputs.map((el, nr) => (
+							<div 
+								key={`${el.what}${nr}`}
+								className="inputWrapper">
+								
+								{el.toolTip[this.state.lang] === undefined? el.toolTip['en']: el.toolTip[this.state.lang]}
+								
+								{el.type === 'select'?(
 									<select 
 										defaultValue={el.value}
 										onChange={ev => this.changeSettingsValues(ev, el, nr)}>
@@ -162,25 +181,37 @@ export class Settings extends Component{
 											</option>
 										))}
 									</select>
-								):(
+								):null}
+
+								{el.type === 'number'?(
 									<p>
 										<input
-										type={el.type}
-										placeholder={el.toolTip[this.state.lang] === undefined? el.toolTip['en']: el.toolTip[this.state.lang]}
-										title={el.toolTip[this.state.lang] === undefined? el.toolTip['en']: el.toolTip[this.state.lang]}
-										onChange={ev => this.changeSettingsValues(ev, el, nr)}
-										value={el.value} />
+											type={el.type}
+											placeholder={el.toolTip[this.state.lang] === undefined? el.toolTip['en']: el.toolTip[this.state.lang]}
+											title={el.toolTip[this.state.lang] === undefined? el.toolTip['en']: el.toolTip[this.state.lang]}
+											onChange={ev => this.changeSettingsValues(ev, el, nr)}
+											value={el.value} />
 										{el.unit !== undefined? el.unit: null}
 									</p>
-								)
-							}
-						</div>
-					))}
+								):null}
+
+								{el.type === 'checkbox'?(
+									<input
+										type={el.type}
+										title={el.toolTip[this.state.lang] === undefined? el.toolTip['en']: el.toolTip[this.state.lang]}
+										checked={el.value}
+										onChange={ev => this.changeSettingsValues(ev, el, nr)}/>
+								):null}
+
+							</div>
+						))}
+					</div>
+
 					<button onClick={this.sendArray}>
-						Wyślij
+						{this.state.sendButton[this.state.lang] === undefined? this.state.sendButton['en']: this.state.sendButton[this.state.lang]}
 					</button>
 				</div>
-				<div 
+				<div
 					className="settingsIcon"
 					onClick={this.showHide}></div>
 			</div>

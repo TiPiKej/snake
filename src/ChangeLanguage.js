@@ -6,6 +6,8 @@ export class ChangeLanguageClass extends Component{
 	constructor(props){
 		super(props);
 
+
+		// getting language from browser -- if it was set
 		if(localStorage.getItem('lang') !== null) this.props.changeLang(localStorage.getItem('lang'));
 
 		this.state = {
@@ -37,22 +39,46 @@ export class ChangeLanguageClass extends Component{
 		}
 	]
 
+	showHide = ({currentTarget}) => {
+		const {parentNode} = currentTarget;
+		let {classList} = parentNode;
+		let isInside = false;
+
+		Array.from(classList).forEach(el => isInside = (el === 'hide')? true: isInside)
+
+		localStorage.setItem('showLanguages', isInside);
+
+		if(isInside) classList.remove('hide')
+		else classList.add('hide')
+	}
+
 	render(){
-		return(
-			<div className="changeLanguage">
-				{this.state.text[this.state.lang] === undefined? this.state.text['en']: this.state.text[this.state.lang]}
-				:
-				<select 
-					onChange={this.change} 
-					defaultValue={this.state.lang}>
-					{this.languages.map(el => (
-						<option 
-							key={el.codeName} 
-							value={el.codeName}>
-							{el.fullName}
-						</option>
-					))}
-				</select>
+		return( // localStorage.getItem('showLanguages')
+			<div className={`changeLanguageWrapper${
+					localStorage.getItem('showLanguages') === 'false'? ' hide': ''
+				}`}>
+				<div
+					className={`changeLanguage`}>
+					{this.state.text[this.state.lang] === undefined? this.state.text['en']: this.state.text[this.state.lang]}
+					:
+					<select 
+						onChange={this.change} 
+						defaultValue={this.state.lang}>
+						{this.languages.map(el => (
+							<option 
+								key={el.codeName} 
+								value={el.codeName}>
+								{el.fullName}
+							</option>
+						))}
+					</select>
+				</div>
+				
+				<p
+					className="changeLanguageTriangle"
+					onClick={this.showHide}>
+					&#9664;
+				</p>
 			</div>
 		);
 	}
