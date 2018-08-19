@@ -82,11 +82,13 @@ canvas.activeEffect{
 	margin: 5px;
 	border: #ffffe4 solid 2px;
 	text-align: center;
+	pointer-events: none;
 }
 
 .gameCanvasWrapper .settingsWrapper .settingsContent.active{
 	bottom: 0;
 	opacity: 1;
+	pointer-events: unset;
 }
 
 .gameCanvasWrapper .settingsWrapper .settingsContent input,
